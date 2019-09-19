@@ -1,15 +1,32 @@
-
 /*
  * routes/index.js
- * 
+ *
  * Routes contains the functions (callbacks) associated with request urls.
  */
 
 // dependencies
-var geocoder = require('geocoder');
+var geocoder = require("geocoder");
 
 // our db model
-var Person = require("../models/model.js");
+// var Person = require("../models/model.js");
+let Project = require("../models/model.js");
+
+//====
+// let Project = require("../models.projectModel.js");
+// const projectRoutes = express.Router();
+
+// // Defined get data(index or listing) route
+// projectRoutes.route("/").get(function(req, res) {
+//   Project.find(function(err, projects) {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       // res.json(projects);
+//       console.log(projects);
+//     }
+//   });
+// });
+//====
 
 /**
  * GET '/'
@@ -19,84 +36,78 @@ var Person = require("../models/model.js");
  */
 
 exports.index = function(req, res) {
-	
-	console.log("main route requested");
+  console.log("main route requested");
 
-	var data = {
-		status: 'OK',
-		message: 'Welcome to the itpeeps-map v1 API'
-	}
+  var data = {
+    status: "OK",
+    message: "Welcome to the itpeeps-map v1 API"
+  };
 
-	// respond back with the data
-	res.json(data);
+  // respond back with the data
+  res.json(data);
+};
 
-}
+// /**
+//  * POST '/api/create'
+//  * Receives a POST request of the new user and location, saves to db, responds back
+//  * @param  {Object} req. An object containing the different attributes of the Person
+//  * @return {Object} JSON
+//  */
 
-/**
- * POST '/api/create'
- * Receives a POST request of the new user and location, saves to db, responds back
- * @param  {Object} req. An object containing the different attributes of the Person
- * @return {Object} JSON
- */
+// exports.create = function(req, res) {
+//   console.log(req.body);
 
-exports.create = function(req,res){
+//   // pull out the name and location
+//   var name = req.body.name;
+//   var location = req.body.location;
 
-	console.log(req.body);
+//   //now, geocode that location
+//   geocoder.geocode(location, function(err, data) {
+//     console.log(data);
 
-	// pull out the name and location
-	var name = req.body.name;
-	var location = req.body.location;
+//     // if we get an error, or don't have any results, respond back with error
+//     if (err || data.status == "ZERO_RESULTS") {
+//       var jsonData = { status: "ERROR", message: "Error finding location" };
+//       res.json(jsonData);
+//     }
 
-	//now, geocode that location
-	geocoder.geocode(location, function ( err, data ) {
+//     // otherwise, save the user
 
-		console.log(data);
-  	
-  	// if we get an error, or don't have any results, respond back with error
-  	if (err || data.status == 'ZERO_RESULTS'){
-  		var jsonData = {status:'ERROR', message: 'Error finding location'};
-  		res.json(jsonData);
-  	}
+//     var locationName = data.results[0].formatted_address; // the location name
+//     var lon = data.results[0].geometry.location.lng;
+//     var lat = data.results[0].geometry.location.lat;
 
-  	// otherwise, save the user
+//     // need to put the geo co-ordinates in a lng-lat array for saving
+//     var lnglat_array = [lon, lat];
 
-	  var locationName = data.results[0].formatted_address; // the location name
-	  var lon = data.results[0].geometry.location.lng;
-		var lat = data.results[0].geometry.location.lat;
-  	
-  	// need to put the geo co-ordinates in a lng-lat array for saving
-  	var lnglat_array = [lon,lat];
+//     var person = Person({
+//       name: name,
+//       locationName: locationName,
+//       locationGeo: lnglat_array
+//     });
 
-	  var person = Person({
-	  	name: name,
-	  	locationName: locationName,
-	  	locationGeo: lnglat_array
-	  });
+// now, save that person to the database
+// mongoose method, see http://mongoosejs.com/docs/api.html#model_Model-save
+//     person.save(function(err, data) {
+//       // if err saving, respond back with error
+//       if (err) {
+//         var jsonData = { status: "ERROR", message: "Error saving person" };
+//         return res.json(jsonData);
+//       }
 
-	  // now, save that person to the database
-		// mongoose method, see http://mongoosejs.com/docs/api.html#model_Model-save	  
-	  person.save(function(err,data){
-	  	// if err saving, respond back with error
-	  	if (err){
-	  		var jsonData = {status:'ERROR', message: 'Error saving person'};
-	  		return res.json(jsonData);
-	  	}
+//       console.log("saved a new person!");
+//       console.log(data);
 
-	  	console.log('saved a new person!');
-	  	console.log(data);
+//       // now return the json data of the new person
+//       var jsonData = {
+//         status: "OK",
+//         person: data
+//       };
 
-	  	// now return the json data of the new person
-	  	var jsonData = {
-	  		status: 'OK',
-	  		person: data
-	  	}
-
-	  	return res.json(jsonData);
-
-	  })
-
-	});		
-}
+//       return res.json(jsonData);
+//     });
+//   });
+// };
 
 /**
  * GET '/api/get/:id'
@@ -105,29 +116,26 @@ exports.create = function(req,res){
  * @return {Object} JSON
  */
 
-exports.getOne = function(req,res){
+// exports.getOne = function(req, res) {
+//   var requestedId = req.param("id");
 
-	var requestedId = req.param('id');
+//   // mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.findById
+//   Person.findById(requestedId, function(err, data) {
+//     // if err or no user found, respond with error
+//     if (err || data == null) {
+//       var jsonData = { status: "ERROR", message: "Could not find that person" };
+//       return res.json(jsonData);
+//     }
 
-	// mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.findById
-	Person.findById(requestedId, function(err,data){
+//     // otherwise respond with JSON data of the user
+//     var jsonData = {
+//       status: "OK",
+//       person: data
+//     };
 
-		// if err or no user found, respond with error 
-		if(err || data == null){
-  		var jsonData = {status:'ERROR', message: 'Could not find that person'};
-  		 return res.json(jsonData);
-  	}
-
-  	// otherwise respond with JSON data of the user
-  	var jsonData = {
-  		status: 'OK',
-  		person: data
-  	}
-
-  	return res.json(jsonData);
-	
-	})
-}
+//     return res.json(jsonData);
+//   });
+// };
 
 /**
  * GET '/api/get'
@@ -135,123 +143,116 @@ exports.getOne = function(req,res){
  * @return {Object} JSON
  */
 
-exports.getAll = function(req,res){
+exports.getAll = function(req, res) {
+  // mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.find
+  Project.find(function(err, data) {
+    // if err or no users found, respond with error
+    if (err || data == null) {
+      var jsonData = { status: "ERROR", message: "Could not find people" };
+      return res.json(jsonData);
+    }
 
-	// mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.find
-	Person.find(function(err, data){
-		// if err or no users found, respond with error 
-		if(err || data == null){
-  		var jsonData = {status:'ERROR', message: 'Could not find people'};
-  		return res.json(jsonData);
-  	}
+    // otherwise, respond with the data
 
-  	// otherwise, respond with the data	
+    var jsonData = {
+      status: "OK",
+      people: data
+    };
+    console.log(data);
 
-  	var jsonData = {
-  		status: 'OK',
-  		people: data
-  	}	
+    res.json(jsonData);
+  });
+};
 
-  	res.json(jsonData);
+// /**
+//  * POST '/api/update/:id'
+//  * Receives a POST request with data of the user to update, updates db, responds back
+//  * @param  {String} req.param('id'). The userId to update
+//  * @param  {Object} req. An object containing the different attributes of the Person
+//  * @return {Object} JSON
+//  */
 
-	})
+// exports.update = function(req, res) {
+//   var requestedId = req.param("id");
 
-}
+//   // pull out the name and location
+//   var name = req.body.name;
+//   var location = req.body.location;
 
-/**
- * POST '/api/update/:id'
- * Receives a POST request with data of the user to update, updates db, responds back
- * @param  {String} req.param('id'). The userId to update
- * @param  {Object} req. An object containing the different attributes of the Person
- * @return {Object} JSON
- */
+//   //now, geocode that location
+//   geocoder.geocode(location, function(err, data) {
+//     console.log(data);
 
-exports.update = function(req,res){
+//     // if we get an error, or don't have any results, respond back with error
+//     if (err || data.status == "ZERO_RESULTS") {
+//       var jsonData = { status: "ERROR", message: "Error finding location" };
+//       res.json(jsonData);
+//     }
 
-	var requestedId = req.param('id');
+//     // otherwise, update the user
 
-	// pull out the name and location
-	var name = req.body.name;
-	var location = req.body.location;
+//     var locationName = data.results[0].formatted_address; // the location name
+//     var lon = data.results[0].geometry.location.lng;
+//     var lat = data.results[0].geometry.location.lat;
 
-	//now, geocode that location
-	geocoder.geocode(location, function ( err, data ) {
+//     // need to put the geo co-ordinates in a lng-lat array for saving
+//     var lnglat_array = [lon, lat];
 
-		console.log(data);
-  	
-  	// if we get an error, or don't have any results, respond back with error
-  	if (err || data.status == 'ZERO_RESULTS'){
-  		var jsonData = {status:'ERROR', message: 'Error finding location'};
-  		res.json(jsonData);
-  	}
+//     var dataToUpdate = {
+//       name: name,
+//       locationName: locationName,
+//       locationGeo: lnglat_array
+//     };
 
-  	// otherwise, update the user
+//     // now, update that person
+//     // mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate
+//     Person.findByIdAndUpdate(requestedId, dataToUpdate, function(err, data) {
+//       // if err saving, respond back with error
+//       if (err) {
+//         var jsonData = { status: "ERROR", message: "Error updating person" };
+//         return res.json(jsonData);
+//       }
 
-	  var locationName = data.results[0].formatted_address; // the location name
-	  var lon = data.results[0].geometry.location.lng;
-		var lat = data.results[0].geometry.location.lat;
-  	
-  	// need to put the geo co-ordinates in a lng-lat array for saving
-  	var lnglat_array = [lon,lat];
+//       console.log("updated the person!");
+//       console.log(data);
 
-	  var dataToUpdate = {
-	  	name: name,
-	  	locationName: locationName,
-	  	locationGeo: lnglat_array
-	  };
+//       // now return the json data of the new person
+//       var jsonData = {
+//         status: "OK",
+//         person: data
+//       };
 
-	  // now, update that person
-		// mongoose method, see http://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate  
-	  Person.findByIdAndUpdate(requestedId, dataToUpdate, function(err,data){
-	  	// if err saving, respond back with error
-	  	if (err){
-	  		var jsonData = {status:'ERROR', message: 'Error updating person'};
-	  		return res.json(jsonData);
-	  	}
+//       return res.json(jsonData);
+//     });
+//   });
+// };
 
-	  	console.log('updated the person!');
-	  	console.log(data);
+// /**
+//  * GET '/api/delete/:id'
+//  * Receives a GET request specifying the user to delete
+//  * @param  {String} req.param('id'). The userId
+//  * @return {Object} JSON
+//  */
 
-	  	// now return the json data of the new person
-	  	var jsonData = {
-	  		status: 'OK',
-	  		person: data
-	  	}
+// exports.remove = function(req, res) {
+//   var requestedId = req.param("id");
 
-	  	return res.json(jsonData);
+//   // Mongoose method, http://mongoosejs.com/docs/api.html#model_Model.findByIdAndRemove
+//   Person.findByIdAndRemove(requestedId, function(err, data) {
+//     if (err || data == null) {
+//       var jsonData = {
+//         status: "ERROR",
+//         message: "Could not find that person to delete"
+//       };
+//       return res.json(jsonData);
+//     }
 
-	  })
+//     // otherwise, respond back with success
+//     var jsonData = {
+//       status: "OK",
+//       message: "Successfully deleted id " + requestedId
+//     };
 
-	});
-
-}
-
-/**
- * GET '/api/delete/:id'
- * Receives a GET request specifying the user to delete
- * @param  {String} req.param('id'). The userId
- * @return {Object} JSON
- */
-
-exports.remove = function(req,res){
-
-	var requestedId = req.param('id');
-
-	// Mongoose method, http://mongoosejs.com/docs/api.html#model_Model.findByIdAndRemove
-	Person.findByIdAndRemove(requestedId,function(err, data){
-		if(err || data == null){
-  		var jsonData = {status:'ERROR', message: 'Could not find that person to delete'};
-  		return res.json(jsonData);
-		}
-
-		// otherwise, respond back with success
-		var jsonData = {
-			status: 'OK',
-			message: 'Successfully deleted id ' + requestedId
-		}
-
-		res.json(jsonData);
-
-	})
-
-}
+//     res.json(jsonData);
+//   });
+// };

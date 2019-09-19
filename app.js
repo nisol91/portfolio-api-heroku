@@ -3,6 +3,7 @@
  */
 
 var express = require("express");
+require("dotenv").config();
 var http = require("http");
 var path = require("path");
 var mongoose = require("mongoose");
@@ -22,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
 
 // connecting to database
-app.db = mongoose.connect(process.env.MONGO_URI);
+app.db = mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
 console.log("connected to database");
 
 /**
@@ -58,11 +59,11 @@ var routes = require("./routes/index.js");
 app.get("/", routes.index); // calls index function in /routes/index.js
 
 // API routes
-app.post("/api/create", routes.create); // API create route and callback (see /routes/index.js)
-app.get("/api/get/:id", routes.getOne); // API retrieve 1 route and callback (see /routes/index.js)
+// app.post("/api/create", routes.create); // API create route and callback (see /routes/index.js)
+// app.get("/api/get/:id", routes.getOne); // API retrieve 1 route and callback (see /routes/index.js)
 app.get("/api/get", routes.getAll); // API retrieve all route and callback (see /routes/index.js)
-app.post("/api/update/:id", routes.update); // API update route and callback (see /routes/index.js)
-app.get("/api/delete/:id", routes.remove); // API delete route and callback (see /routes/index.js)
+// app.post("/api/update/:id", routes.update); // API update route and callback (see /routes/index.js)
+// app.get("/api/delete/:id", routes.remove); // API delete route and callback (see /routes/index.js)
 
 // if route not found, respond with 404
 app.use(function(req, res, next) {
